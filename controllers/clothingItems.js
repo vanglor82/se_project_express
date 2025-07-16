@@ -6,20 +6,20 @@ const {
 } = require("../utils/errors");
 
 const createItem = (req, res) => {
-  const { name, weather, imageURL } = req.body;
-
-  if (!name || !weather || !imageURL) {
-    return res.status(BAD_REQUEST).send({ message: "Missing required fields" });
-  }
+  const { name, weather, imageUrl } = req.body;
 
   clothingItem
-    .create({ name, weather, imageURL })
+    .create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
-      res.status(201).send(item.toObject());
+      res.status(201).send({ data: item.toObject() });
     })
-
     .catch((err) => {
       console.error(err);
+
+      if (err.name === "ValidationError") {
+        return res.status(BAD_REQUEST).send({ message: err.message });
+      }
+
       return res
         .status(INTERNAL_SERVER_ERROR)
         .send({ message: "An error has occurred on the server." });
@@ -42,14 +42,10 @@ const getItems = (req, res) => {
 
 const updateItem = (req, res) => {
   const { itemId } = req.params;
-  const { imageURL } = req.body;
-
-  if (!imageURL) {
-    return res.status(BAD_REQUEST).send({ message: "imageURL is required" });
-  }
+  const { imageUrl } = req.body;
 
   clothingItem
-    .findByIdAndUpdate(itemId, { $set: { imageURL } }, { new: true })
+    .findByIdAndUpdate(itemId, { $set: { imageUrl } }, { new: true })
     .orFail(() => {
       throw new Error("Item not found");
     })
@@ -82,7 +78,9 @@ const deleteItem = (req, res) => {
     .orFail(() => {
       throw new Error("Item not found");
     })
-    .then(() => res.status(204).end())
+    .then((deletedItem) => {
+      res.status(200).send({ message: "Item deleted", data: deletedItem });
+    })
     .catch((err) => {
       console.error(err);
 
@@ -103,11 +101,12 @@ const deleteItem = (req, res) => {
 };
 
 const likeItem = (req, res) => {
-  ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true }
-  )
+  clothingItem
+    .findByIdAndUpdate(
+      req.params.itemId,
+      { $addToSet: { likes: req.user._id } },
+      { new: true }
+    )
     .orFail(() => {
       throw new Error("Item not found");
     })
@@ -129,11 +128,12 @@ const likeItem = (req, res) => {
 };
 
 const dislikeItem = (req, res) => {
-  ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
-    { $pull: { likes: req.user._id } },
-    { new: true }
-  )
+  clothingItem
+    .findByIdAndUpdate(
+      req.params.itemId,
+      { $pull: { likes: req.user._id } },
+      { new: true }
+    )
     .orFail(() => {
       throw new Error("Item not found");
     })

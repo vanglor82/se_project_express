@@ -12,18 +12,17 @@ mongoose
   })
   .catch(console.error);
 
-app.use(express.json());
-app.use("/", mainRouter);
-
 app.use((req, res, next) => {
   req.user = {
-    _id: '6876f2cc8d1613cdc83b9e5a'// paste the _id of the test user created in the previous step
+    _id: "6876f2cc8d1613cdc83b9e5a", // paste the _id of the test user created in the previous step
   };
+  console.log(`${req.method} ${req.path}`);
   next();
 });
+
+app.use(express.json());
+app.use("/", mainRouter);
 
 app.listen(PORT, () => {
   console.log(`listening to server ${PORT}`);
 });
-
-
