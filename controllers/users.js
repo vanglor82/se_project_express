@@ -6,31 +6,24 @@ const {
 } = require("../utils/errors");
 
 const getUsers = (req, res) => {
-  user.find({})
-    .then((user) => res.status(200).send(user))
+  user
+    .find({})
+    .then((users) => res.status(200).send(users))
     .catch((err) => {
-      console.log(err);
-      if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid item ID format" });
-      }
-
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "Item not found" });
-      }
-
-      return res
+      console.error(err);
+      res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+        .send({ message: "Server error occurred." });
     });
 };
 
-
 const createUser = (req, res) => {
   const { name, avatar } = req.body;
-  user.create({ name, avatar })
-    .then((user) => res.status(201).send(user))
+  user
+    .create({ name, avatar })
+    .then((users) => res.status(201).send(users))
     .catch((err) => {
-      console.log(err);
+      console.error(err);
       if (err.name === "ValidationError") {
         return res.status(BAD_REQUEST).send({ message: err.message });
       }
@@ -41,20 +34,22 @@ const createUser = (req, res) => {
     });
 };
 
-
 const getUserId = (req, res) => {
   const { userId } = req.params;
 
-  user.findById(userId)
+  user
+    .findById(userId)
     .orFail(() => {
       throw new Error("User not found");
     })
-    .then((user) => res.status(200).send(user))
+    .then((users) => res.status(200).send(users))
     .catch((err) => {
       console.error(err);
 
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid user ID format" });
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Invalid user ID format" });
       }
 
       if (err.message === "User not found") {
@@ -66,6 +61,5 @@ const getUserId = (req, res) => {
         .send({ message: "An error has occurred on the server." });
     });
 };
-
 
 module.exports = { getUsers, createUser, getUserId };
