@@ -40,36 +40,6 @@ const getItems = (req, res) => {
     });
 };
 
-const updateItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageUrl } = req.body;
-
-  clothingItem
-    .findByIdAndUpdate(itemId, { $set: { imageUrl } }, { new: true })
-    .orFail(() => {
-      throw new Error("Item not found");
-    })
-    .then((item) => {
-      res.status(200).send({ data: item });
-    })
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Invalid item ID format" });
-      }
-
-      if (err.message === "Item not found") {
-        return res.status(NOT_FOUND).send({ message: err.message });
-      }
-
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
-    });
-};
-
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 

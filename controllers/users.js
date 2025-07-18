@@ -25,7 +25,7 @@ const createUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: err.message });
+        return res.status(BAD_REQUEST).send({ message: "Invalid data input." });
       }
 
       return res
@@ -34,7 +34,7 @@ const createUser = (req, res) => {
     });
 };
 
-const getUserId = (req, res) => {
+const getUser = (req, res) => {
   const { userId } = req.params;
 
   user
@@ -62,4 +62,4 @@ const getUserId = (req, res) => {
     });
 };
 
-module.exports = { getUsers, createUser, getUserId };
+module.exports = { getUsers, createUser, getUser };
