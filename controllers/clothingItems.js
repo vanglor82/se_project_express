@@ -3,35 +3,31 @@ const {
   BAD_REQUEST,
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
-  FORBIDDEN,
 } = require("../utils/errors");
 
 const createItem = (req, res) => {
-  console.log('[createItem:req.user]', req.user);
-
   const { name, weather, imageUrl } = req.body;
 
   if (!req.user || !req.user._id) {
-  console.log('[createItem] req.user is missing or malformed');
-  return res.status(401).send({ message: 'User authentication required' });
-}
+    return res.status(401).send({ message: "User authentication required" });
+  }
 
   return clothingItem
-  .create({ name, weather, imageUrl, owner: req.user._id })
-  .then((item) => {
-    res.status(201).send({ data: item.toObject() });
-  })
-  .catch((err) => {
-    console.error(err);
+    .create({ name, weather, imageUrl, owner: req.user._id })
+    .then((item) => {
+      res.status(201).send({ data: item.toObject() });
+    })
+    .catch((err) => {
+      console.error(err);
 
-    if (err.name === "ValidationError") {
-      return res.status(BAD_REQUEST).send({ message: err.message });
-    }
+      if (err.name === "ValidationError") {
+        return res.status(BAD_REQUEST).send({ message: err.message });
+      }
 
-    return res
-      .status(INTERNAL_SERVER_ERROR)
-      .send({ message: "An error has occurred on the server." });
-  });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "An error has occurred on the server." });
+    });
 };
 
 const getItems = (req, res) => {
@@ -49,36 +45,32 @@ const getItems = (req, res) => {
 };
 
 const deleteItem = (req, res) => {
-  const itemId = req.params.id;
-  const currentUserId = req.user._id;
+  const { itemId } = req.params;
+  const { _id: currentUserId } = req.user;
 
   clothingItem
-    .findById(itemId)
-    .orFail(() => {
-      throw new Error("Item not found");
-    })
-    .then((item) => {
-      if (item.owner.toString() !== currentUserId) {
-        return res
-          .status(FORBIDDEN)
-          .send({ message: "You don't have permission to delete this item" });
+    .findOneAndDelete({ _id: itemId, owner: currentUserId })
+    .then((deletedItem) => {
+      if (!deletedItem) {
+        throw new Error("Item not found or you're not authorized to delete it");
       }
-
-      return clothingItem.findByIdAndDelete(itemId);
+      return clothingItem.find({});
     })
-    .then(() => {
-      res.send({ message: "Item successfully deleted" });
+    .then((items) => {
+      res.send({ data: items });
     })
     .catch((err) => {
-      console.error("[Delete Item Error]", err);
+      console.error("Delete Item Error", err);
 
       if (err.name === "CastError") {
         return res
-          .status(NOT_FOUND)
+          .status(BAD_REQUEST)
           .send({ message: "Invalid item ID format" });
       }
 
-      if (err.message === "Item not found") {
+      if (
+        err.message === "Item not found or you're not authorized to delete it"
+      ) {
         return res.status(NOT_FOUND).send({ message: err.message });
       }
 
