@@ -23,13 +23,6 @@ app.post("/signin", loginUser);
 app.post("/signup", createUser);
 app.get("/items", getItems);
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "6882f833737d4b95c1e18c99" // Temporary user ID for testing
-  };
-  next();
-});
-
 app.use(auth);
 app.use("/", mainRouter);
 
