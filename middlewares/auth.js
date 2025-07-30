@@ -5,12 +5,10 @@ const { UNAUTHORIZED } = require("../utils/errors");
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
-  console.log("🛡️ Auth middleware hit");
-  console.log("🧪 Validation middleware hit");
-  console.log("🎯 Controller reached");
-
   if (!authorization || !authorization.startsWith("Bearer ")) {
-    return res.status(UNAUTHORIZED).send({ message: "Authorization required" });
+    const error = new Error("Authorization required: Missing or invalid token format.");
+    error.statusCode = UNAUTHORIZED;
+    return next(error);
   }
 
   const token = authorization.replace("Bearer ", "");
@@ -19,9 +17,10 @@ const auth = (req, res, next) => {
   try {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
-    return res.status(UNAUTHORIZED).send({ message: "Authorization required" });
+    const error = new Error("Authorization required: Invalid token.");
+    error.statusCode = UNAUTHORIZED;
+    return next(error);
   }
-
   req.user = payload;
   return next();
 };
