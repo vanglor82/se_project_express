@@ -3,11 +3,11 @@ const { JWT_SECRET } = require("../utils/config");
 const { UNAUTHORIZED } = require("../utils/errors");
 
 const auth = (req, res, next) => {
+  const { authorization } = req.headers;
+
   console.log("🛡️ Auth middleware hit");
   console.log("🧪 Validation middleware hit");
   console.log("🎯 Controller reached");
-
-  const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
     return res.status(UNAUTHORIZED).send({ message: "Authorization required" });

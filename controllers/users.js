@@ -93,12 +93,6 @@ const loginUser = (req, res, next) => {
 };
 
 const updateProfile = (req, res, next) => {
-  if (!req.user || !req.user.id) {
-    const error = new Error("Authorization required");
-    error.statusCode = UNAUTHORIZED;
-    return next(error);
-  }
-
   const { name, avatar } = req.body;
 
   return User.findByIdAndUpdate(
