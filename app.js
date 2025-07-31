@@ -7,8 +7,6 @@ const errorHandler = require("./middlewares/errorHandler");
 const app = express();
 const { PORT = 3001 } = process.env;
 
-app.disable("x-powered-by");
-
 app.use(express.json());
 app.use(cors());
 
