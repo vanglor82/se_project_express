@@ -2,12 +2,30 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const mainRouter = require("./routes/index");
+
 const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
 const { PORT = 3001 } = process.env;
 
-app.use(express.json());
+app.disable("x-powered-by");
+
+app.use(
+  express.json({
+    strict: true,
+    limit: "1mb",
+  })
+);
+
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+    const error = new Error("Invalid JSON payload.");
+    error.statusCode = 400;
+    return next(error);
+  }
+  next(err);
+});
+
 app.use(cors());
 
 app.use("/", mainRouter);
