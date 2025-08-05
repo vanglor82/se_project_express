@@ -23,7 +23,7 @@ app.use((err, req, res, next) => {
     error.statusCode = 400;
     return next(error);
   }
-  next(err);
+  return next(err);
 });
 
 app.use(cors());
