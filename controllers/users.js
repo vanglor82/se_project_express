@@ -90,7 +90,7 @@ const loginUser = (req, res, next) => {
     .catch((err) => {
       if (err.message === "Incorrect email or password") {
         const error = new Error("Invalid email or password");
-        error.statusCode = BAD_REQUEST;
+        error.statusCode = UNAUTHORIZED;
         return next(error);
       }
       return next(err);
