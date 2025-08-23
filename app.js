@@ -1,9 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const { requestLogger } = require("./middlewares/logger");
 const mainRouter = require("./routes/index");
 
 const errorHandler = require("./middlewares/errorHandler");
+const { errorLogger } = require("express-winston");
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -28,7 +30,10 @@ app.use((err, req, res, next) => {
 
 app.use(cors());
 
+app.use(requestLogger);
 app.use("/", mainRouter);
+
+app.use(errorLogger);
 
 app.use(errorHandler);
 
