@@ -10,19 +10,8 @@ const errorHandler = require("./middlewares/errorHandler");
 const { errorLogger } = require("express-winston");
 
 const app = express();
-const {
-  PORT = 3001,
-  DB_ADDRESS = "mongodb://127.0.0.1:27017/wtwr_db",
-} = process.env;
 
-app.disable("x-powered-by");
-
-app.use(
-  express.json({
-    strict: true,
-    limit: "1mb",
-  })
-);
+const { PORT = 3001 } = process.env;
 
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
@@ -33,8 +22,9 @@ app.use((err, req, res, next) => {
   return next(err);
 });
 
-app.use(cors());
+app.use(express.json());
 
+app.use(cors());
 
 app.use(requestLogger);
 app.use("/", mainRouter);
@@ -44,7 +34,7 @@ app.use(errorLogger);
 app.use(errorHandler);
 
 mongoose
-  .connect(DB_ADDRESS)
+  .connect("mongodb://127.0.0.1:27017/wtwr_db")
   .then(() => {
     console.log("Connected to DB");
   })
