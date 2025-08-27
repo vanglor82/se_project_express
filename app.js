@@ -10,7 +10,10 @@ const errorHandler = require("./middlewares/errorHandler");
 const { errorLogger } = require("express-winston");
 
 const app = express();
-const { PORT = 3001 } = process.env;
+const {
+  PORT = 3001,
+  DB_ADDRESS = "mongodb://127.0.0.1:27017/wtwr_db",
+} = process.env;
 
 app.disable("x-powered-by");
 
@@ -32,6 +35,7 @@ app.use((err, req, res, next) => {
 
 app.use(cors());
 
+
 app.use(requestLogger);
 app.use("/", mainRouter);
 
@@ -40,7 +44,7 @@ app.use(errorLogger);
 app.use(errorHandler);
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/wtwr_db")
+  .connect(DB_ADDRESS)
   .then(() => {
     console.log("Connected to DB");
   })
