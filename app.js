@@ -1,13 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const { requestLogger } = require("./middlewares/logger");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 require("dotenv").config();
 
 const mainRouter = require("./routes/index");
 
 const errorHandler = require("./middlewares/errorHandler");
-const { errorLogger } = require("express-winston");
 
 const app = express();
 
@@ -25,6 +24,7 @@ app.use((err, req, res, next) => {
 app.use(express.json());
 
 app.use(cors());
+
 
 app.use(requestLogger);
 app.use("/", mainRouter);
