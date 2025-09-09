@@ -1,3 +1,10 @@
+// Crash test route for PM2 testing
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");

@@ -17,5 +17,15 @@ This backend project uses Node.js and Express backend API for user authenticatio
 - Postman (Used for testing API and validation).
 - ESLint (Used for code quaility). 
 
+## Links
+
+- [Figma Design](https://www.figma.com/file/DTojSwldenF9UPKQZd6RRb/Sprint-10%3A-WTWR)
+
+- [React Repo Link](https://github.com/vanglor82/se_project_react.git)
+
+- [Express Repo Link](https://github.com/vanglor82/se_project_express.git)
+
+- [Webpage](https://vanglor-wtwr.jumpingcrab.com/)
+
 
 
