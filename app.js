@@ -41,6 +41,12 @@ app.use(errors());
 
 app.use(errorHandler);
 
+const path = require("path");
+app.use(express.static(path.join(__dirname, "../se_project_react/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../se_project_react/dist/index.html"));
+});
+
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
   .then(() => {
