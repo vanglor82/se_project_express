@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require("celebrate");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
+const rateLimiter = require("./middlewares/rateLimiter");
 
 const app = express();
 
@@ -26,10 +27,9 @@ app.use((err, req, res, next) => {
   return next(err);
 });
 
+app.use(rateLimiter);
 app.use(express.json());
-
 app.use(cors());
-
 app.use(requestLogger);
 app.use("/", mainRouter);
 
